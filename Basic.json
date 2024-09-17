@@ -1,0 +1,123 @@
+{
+    "publicAddress": "",
+    "publicPort": $port,
+    "bindAddress": "",
+    "bindPort": $port,
+    "a2s": {
+        "address": "127.0.0.1",
+        "port": 17777
+    },
+    "rcon": {
+        "address": "127.0.0.1",
+        "port": 19999,
+        "password": "$adminpassword",
+        "permission": "monitor",
+        "blacklist": [],
+        "whitelist": []
+    },
+    "game": {
+        "name": "$publicname",
+        "password": "$password",
+        "passwordAdmin": "$adminpassword",
+        "admins": [],
+        "scenarioId": "{3AB84052F4245DB1}Missions/EveronPVE.conf",
+        "maxPlayers": 10,
+        "visible": true,
+        "crossPlatform": true,
+        "supportedPlatforms": [
+            "PLATFORM_PC",
+            "PLATFORM_XBL"
+        ],
+        "gameProperties": {
+            "serverMaxViewDistance": 2500,
+            "serverMinGrassDistance": 50,
+            "networkViewDistance": 1000,
+            "disableThirdPerson": false,
+            "fastValidation": true,
+            "battlEye": true,
+            "VONDisableUI": true,
+            "VONDisableDirectSpeechUI": true,
+            "missionHeader": {
+                "m_iPlayerCount": 40,
+                "m_eEditableGameFlags": 6,
+                "m_eDefaultGameFlags": 6,
+                "m_bUseSetupMenu": 0,
+                "other": "values"
+            }
+        },
+        "mods": [{
+                "name": "Combat Scenarios Everon",
+                "modId": "6208D945C86DD107"
+            }, {
+                "name": "ACE Backblast",
+                "modId": "60E573C9B04CC408"
+            }, {
+                "name": "ACE Carrying",
+                "modId": "5DBD560C5148E1DA"
+            }, {
+                "name": "ACE Chopping",
+                "modId": "5EB744C5F42E0800"
+            }, {
+                "name": "ACE Compass",
+                "modId": "60C53A9372ED3964"
+            }, {
+                "name": "ACE Core",
+                "modId": "60C4CE4888FF4621"
+            }, {
+                "name": "ACE Finger",
+                "modId": "606C369BAC3F6CC3"
+            }, {
+                "name": "ACE Magazine Repack",
+                "modId": "611CB1D409001EB0"
+            }, {
+                "name": "ACE Medical",
+                "modId": "60C4C12DAE90727B"
+            }, {
+                "name": "ACE Trenches",
+                "modId": "60EAEA0389DB3CC2"
+            }, {
+                "name": "Night Vision System",
+                "modId": "59A30ACC02650E71"
+            }, {
+                "name": "BetterMuzzleFlashes 2.0",
+                "modId": "59674C21AA886D57"
+            }, {
+                "name": "BetterTracers 2.0",
+                "modId": "59673B6FBB95459F"
+            }, {
+                "name": "BetterSounds 3.6",
+                "modId": "597C0CF3A7AA8A99"
+            }, {
+                "name": "Dynamic Timescale",
+                "modId": "62191221E50A878A"
+            }, {
+                "name": "BetterHitsEffects 3.0 Alpha",
+                "modId": "59651354B2904BA6"
+            }, {
+                "name": "Keep Gun When Uncon",
+                "modId": "6088A3044B7ECBFD"
+            }, {
+                "name": "GM Persistent Loadouts",
+                "modId": "5C73156675E11A0F"
+            }, {
+                "name": "Game Master Enhanced",
+                "modId": "5964E0B3BB7410CE"
+            }, {
+                "name": "ExplosionsEffects",
+                "modId": "5A855AA2B4EE1169"
+            }, {
+                "name": "Game Master FX",
+                "modId": "5994AD5A9F33BE57"
+            }, {
+                "name": "Keep Abandoned Vehicles",
+                "modId": "60E2D7E5A20FABEB"
+            }, {
+                "name": "TMT Better Supplies",
+                "modId": "622746B0CE1DCB3C"
+            }
+        ]
+    },
+    "operating": {
+        "lobbyPlayerSynchronise": false
+    }
+}
