@@ -8,8 +8,7 @@ BLUE='\033[0;34m'
 WHITE='\033[47m'
 CYAN='\033[0;36m'
 NC='\033[0m' # No Color
-MIN_FREE_SPACE=10 # Testing with 10, but should be set to 20, as mods take a lot.
-
+MIN_FREE_SPACE=20 
 #functions
 verify_disk_space(){
     local FREE_SPACE=$(df --output=avail -BG / | tail -n 1 | tr -d 'G')
