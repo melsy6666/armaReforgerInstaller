@@ -1,5 +1,4 @@
-#/bin/bash
-# This will create a user, install all dependencies, create config files, install steamcmd, install arma reforger server, setup service, and will start the server at the very end. 
+#!/bin/bash
 # Defines
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -8,22 +7,20 @@ BLUE='\033[0;34m'
 WHITE='\033[47m'
 CYAN='\033[0;36m'
 NC='\033[0m' # No Color
-MIN_FREE_SPACE=20 
+MIN_FREE_SPACE=10
 #functions
 verify_disk_space(){
     local FREE_SPACE=$(df --output=avail -BG / | tail -n 1 | tr -d 'G')
 	if((FREE_SPACE >= MIN_FREE_SPACE));then
 		echo_green "Free space is valid, current is ${FREE_SPACE}"
 	else
-		echo_red "Insufficient free space to install and run ${MIN_FREE_SPACE}GB required, ${FREE_SPACE} availible."
+		echo_red "Insufficient free space to install and run. ${MIN_FREE_SPACE}GB required, ${FREE_SPACE} availible."
 		exit 1
 	fi
 }
-
 echo_green(){
 	echo -e "${GREEN}$1${NC}"
 }
-
 echo_yellow(){
 	echo -e "${YELLOW}$1${NC}"
 }
@@ -38,12 +35,11 @@ echo_cyan() {
 }
 #verify disk space
 verify_disk_space
-
 #get the name of the arma service from the user.
 while true; do
 	echo_yellow "What is the name of the server, no spaces?. Letters, numbers, -, and _ only."
 	read servicename
-	if [[ "$servicename" =~ ^[a-zA-Z0-9_-]+$ ]] then
+	if [[ "$servicename" =~ ^[a-zA-Z0-9_-]+$ ]]; then
 		echo_green "Will create a new server with the name $servicename"
 		break
 	else
@@ -67,9 +63,8 @@ echo_yellow "Type in a server password, if no password needed leave blank"
 read password
 echo_yellow "Type in a server administrator password"
 read adminpassword
-
 #create the service 	
-cat <<EOF | sudo tee /etc/systemd/system/$servicename.service
+cat <<EOF | sudo tee "/etc/systemd/system/$servicename.service"
 [Unit]
 Description=Arma Reforger Server $servicename
 After=network.target
@@ -87,12 +82,11 @@ WantedBy=multi-user.target
 EOF
 
 #create the service user 
-useradd -m -s /usr/sbin/nologin $servicename
-passwd -l$servicename
+useradd -m -s /usr/sbin/nologin "$servicename"
+passwd -l "$servicename"
 addgroup servermanager
-usermod -aG servermanager $servicename
+usermod -aG servermanager "$servicename"
 echo "$servicename ALL=(ALL:ALL) NOPASSWD: /home/$servicename/*" | sudo tee -a /etc/sudoers
-
 echo_green "Starting on the install of the packages, steam, and Arma Reforger"
 #start the package install
 apt-get update
@@ -111,31 +105,24 @@ apt install lib32gcc-s1 -y
 echo steam steam/license note '' | debconf-set-selections
 echo steam steam/question select "I AGREE" | debconf-set-selections
 apt install steamcmd -y
-
 #install Arma 
 echo_green "installing Arma Reforger Server, this will take a bit"
-steamcmd +force_install_dir /home/$servicename/reforger +login anonymous +app_update 1874900 +quit
-
+steamcmd +force_install_dir "/home/$servicename/reforger" +login anonymous +app_update 1874900 +quit
 #create the run.sh file
-cat <<EOF | sudo tee /home/$servicename/reforger/run.sh
+cat <<EOF | sudo tee "/home/$servicename/reforger/run.sh"
 #!/bin/bash
-/home/$servicename/reforger/ArmaReforgerServer -maxFPS 60 -gproj /home/$servicename/reforger/addons/data/ArmaReforger.gproj -config /home/$servicename/reforger/configs/Basic.json -backendlog -nothrow -profile /home/$servicename/reforger/profile/ -loadSessionSave -addonsDir/home/$servicename/reforger/addons >> /var/log/$servicename.log 2>&1
+/home/$servicename/reforger/ArmaReforgerServer -maxFPS 60 -gproj /home/$servicename/reforger/addons/data/ArmaReforger.gproj -config /home/$servicename/reforger/configs/Basic.json -backendlog -nothrow -profile /home/$servicename/reforger/profile/ -loadSessionSave -addonsDir /home/$servicename/reforger/addons >> /var/log/$servicename.log 2>&1
 EOF
-
-cat <<EOF | sudo tee /home/$servicename/reforger/run.sh.CONSOLE_LOG
+cat <<EOF | sudo tee "/home/$servicename/reforger/run.sh.CONSOLE_LOG"
 #!/bin/bash
-/home/$servicename/reforger/ArmaReforgerServer -maxFPS 60 -gproj /home/$servicename/reforger/addons/data/ArmaReforger.gproj -config /home/$servicename/reforger/configs/Basic.json -backendlog -nothrow -profile /home/$servicename/reforger/profile/ -loadSessionSave -addonsDir/home/$servicename/reforger/addons
+/home/$servicename/reforger/ArmaReforgerServer -maxFPS 60 -gproj /home/$servicename/reforger/addons/data/ArmaReforger.gproj -config /home/$servicename/reforger/configs/Basic.json -backendlog -nothrow -profile /home/$servicename/reforger/profile/ -loadSessionSave -addonsDir /home/$servicename/reforger/addons
 EOF
 #create the config and profile folders
-mkdir /home/$servicename/reforger/configs
-mkdir /home/$servicename/reforger/profile
-
+mkdir "/home/$servicename/reforger/configs"
+mkdir "/home/$servicename/reforger/profile"
 echo_green "Folders and configuration files have been created"
-
-
-
 echo_green "Creating a basic server config, edit at /home/$servicename/reforger/configs/Basic.json"
-cat <<EOF | sudo tee /home/$servicename/reforger/configs/Basic.json
+cat <<EOF | sudo tee "/home/$servicename/reforger/configs/Basic.json"
 {
     "publicAddress": "",
     "publicPort": $port,
@@ -184,9 +171,6 @@ cat <<EOF | sudo tee /home/$servicename/reforger/configs/Basic.json
             }
         },
         "mods": [{
-                "name": "Combat Scenarios Everon",
-                "modId": "6208D945C86DD107"
-            }, {
                 "name": "ACE Backblast",
                 "modId": "60E573C9B04CC408"
             }, {
@@ -214,26 +198,26 @@ cat <<EOF | sudo tee /home/$servicename/reforger/configs/Basic.json
                 "name": "ACE Trenches",
                 "modId": "60EAEA0389DB3CC2"
             }, {
-                "name": "Night Vision System",
-                "modId": "59A30ACC02650E71"
+                "name": "BetterHitsEffects 3.0 Alpha",
+                "modId": "59651354B2904BA6"
             }, {
                 "name": "BetterMuzzleFlashes 2.0",
                 "modId": "59674C21AA886D57"
             }, {
+                "name": "BetterSounds 3.6",
+                "modId": "597C0CF3A7AA8A99"
+            }, {
                 "name": "BetterTracers 2.0",
                 "modId": "59673B6FBB95459F"
             }, {
-                "name": "BetterSounds 3.6",
-                "modId": "597C0CF3A7AA8A99"
+                "name": "Combat Scenarios Everon",
+                "modId": "6208D945C86DD107"
             }, {
                 "name": "Dynamic Timescale",
                 "modId": "62191221E50A878A"
             }, {
-                "name": "BetterHitsEffects 3.0 Alpha",
-                "modId": "59651354B2904BA6"
-            }, {
-                "name": "Keep Gun When Uncon",
-                "modId": "6088A3044B7ECBFD"
+                "name": "ExplosionsEffects",
+                "modId": "5A855AA2B4EE1169"
             }, {
                 "name": "GM Persistent Loadouts",
                 "modId": "5C73156675E11A0F"
@@ -241,17 +225,20 @@ cat <<EOF | sudo tee /home/$servicename/reforger/configs/Basic.json
                 "name": "Game Master Enhanced",
                 "modId": "5964E0B3BB7410CE"
             }, {
-                "name": "ExplosionsEffects",
-                "modId": "5A855AA2B4EE1169"
-            }, {
                 "name": "Game Master FX",
                 "modId": "5994AD5A9F33BE57"
             }, {
                 "name": "Keep Abandoned Vehicles",
                 "modId": "60E2D7E5A20FABEB"
             }, {
+                "name": "Keep Gun When Uncon",
+                "modId": "6088A3044B7ECBFD"
+            }, {
+                "name": "Night Vision System",
+                "modId": "59A30ACC02650E71"
+            }, {
                 "name": "TMT Better Supplies",
-                # "modId": "622746B0CE1DCB3C"
+                "modId": "622746B0CE1DCB3C"
             }
         ]
     },
@@ -260,37 +247,29 @@ cat <<EOF | sudo tee /home/$servicename/reforger/configs/Basic.json
     }
 }
 EOF
-
-
 #setup the permissions.
 echo_green "Setting up permissions"
-chown -R :servermanager /home/$servicename/reforger 
-chmod -R 755 /home/$servicename/reforger
-chmod +x /home/$servicename/reforger/run.sh
-chmod +x /home/$servicename/reforger/run.sh.CONSOLE_LOG
-chmod +x /home/$servicename/reforger/ArmaReforgerServer
-
+chown -R :servermanager "/home/$servicename/reforger"
+chmod -R 755 "/home/$servicename/reforger"
+chmod +x "/home/$servicename/reforger/run.sh"
+chmod +x "/home/$servicename/reforger/run.sh.CONSOLE_LOG"
+chmod +x "/home/$servicename/reforger/ArmaReforgerServer"
 #reload the daemon
 systemctl daemon-reload
-
 #create aliases to start and stop the server
 echo_green "creating alias to start and stop server"
-
-bash -c 'echo "stopser=\"systemctl stop $servicename.service\"" >> /etc/environment'
-bash -c 'echo "startser=\"systemctl start $servicename.service\"" >> /etc/environment'
-bash -c 'echo "statusser=\"systemctl status $servicename.service\"" >> /etc/environment'
+bash -c 'echo "stopser=\"systemctl stop `$servicename.service\"" >> /etc/environment'
+bash -c 'echo "startser=\"systemctl start `$servicename.service\"" >> /etc/environment'
+bash -c 'echo "statusser=\"systemctl status `$servicename.service\"" >> /etc/environment'
 source /etc/environment
-
 echo_cyan "The install is complete"
 echo_cyan "Please run /home/$servicename/reforger/run.sh.CONSOLE_LOG to start the service for the first time"
 echo_cyan "After confirming everything works, execute systemctl enable $servicename.service to make the server start on host start"
-echo_cyan "$stopser will stop and $startser will start, $statusser will get status"
-
+echo_cyan '$stopser will stop and $startser will start, $statusser will get status'
 echo_cyan "Starting intial server run"
 echo_cyan "##############################"
 echo_cyan "##############################"
 echo_cyan "##############################"
 echo_cyan "##############################"
-
 bash -c "/home/$servicename/reforger/run.sh.CONSOLE_LOG"
 
